@@ -1,0 +1,105 @@
+"""
+Created on Wed Jul  8 12:29:26 2020
+
+@author: benja
+"""
+
+#Numpy will be used to create random numbers
+import numpy as np
+#Setting some constants. Starters shows each pitcher's win percentage, Starts
+#is a counter that gets used to work out each pitcher's expected number of starts,
+#Eliminated is a toggle that ends each loop, TourneyWins is a counter for victories,
+#i is a loop counter, and Trials is the number of loops we will run
+Starters=[.55,.55,.55,.55,.3]
+Starts=[0,0,0,0,0]
+Eliminated = 0
+TourneyWins=0
+i=0
+Trials=1000000
+#Core loop, from 0 to the number of trials
+while i<Trials:
+    #SeriesWins is a counter that lets us know if we've won 5 series and the tournament
+    SeriesWins=0
+    #Rest is the number of days since each pitcher's start. Every pitcher starts rested
+    Rest=[5,5,5,5,5]
+    Eliminated=0
+    #this loop runs until the team loses a series or wins the whole thing
+    while Eliminated <1:
+        #in-series win counters; first to four wins
+        WeWins=0
+        TheyWins=0
+        #this loop plays a game by determining the best rested starter and using
+        #NP Random to simulate a game. It then rests the other starters by a day,
+        #moves today's starter's rest to 0, and increments our wins or our
+        #opponent's wins by a game.
+        while max(WeWins,TheyWins)<4:
+            if Rest[0]>3:
+                GameStarter=0
+                Rest[1]+=1
+                Rest[2]+=1
+                Rest[3]+=1
+                Rest[4]+=1
+                Rest[0]=0
+                Starts[0]+=1
+            elif Rest[1]>3:
+                GameStarter=1
+                Rest[0]+=1
+                Rest[2]+=1
+                Rest[3]+=1
+                Rest[4]+=1
+                Rest[1]=0
+                Starts[1]+=1
+            elif Rest[2]>3:
+                GameStarter=2
+                Rest[0]+=1
+                Rest[1]+=1
+                Rest[3]+=1
+                Rest[4]+=1
+                Rest[2]=0
+                Starts[2]+=1
+            elif Rest[3]>3:
+                GameStarter=3
+                Rest[0]+=1
+                Rest[1]+=1
+                Rest[2]+=1
+                Rest[4]+=1
+                Rest[3]=0
+                Starts[3]+=1
+            else:
+                GameStarter=4
+                Rest[0]+=1
+                Rest[1]+=1
+                Rest[2]+=1
+                Rest[3]+=1
+                Rest[4]=0
+                Starts[4]+=1
+            Result=np.random.random()
+            if Result < Starters[GameStarter]:
+                WeWins+=1
+            else:
+                TheyWins+=1
+            #this clause ends the simulation by iterating Eliminated if we lose a series
+            if TheyWins==4:
+                Eliminated+=1
+            #this clause ends a series when we reach four wins, then gives each
+            #starter rest equal to the number of days off
+            #It also increments SeriesWins by one, and if our team has won five series,
+            #ends the loop and adds one to our tournament win count.
+            elif WeWins==4:
+                SeriesWins+=1
+                if SeriesWins==5:
+                    Eliminated+=1
+                    TourneyWins+=1
+                RestAdd=7-WeWins-TheyWins
+                Rest[0]+=RestAdd
+                Rest[1]+=RestAdd
+                Rest[2]+=RestAdd
+                Rest[3]+=RestAdd
+                Rest[4]+=RestAdd
+    i+=1
+          
+    
+
+print(TourneyWins/Trials)
+print(Starts[0]/Trials,Starts[1]/Trials,Starts[2]/Trials,Starts[3]/Trials,Starts[4]/Trials)
+            
